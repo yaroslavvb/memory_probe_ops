@@ -26,6 +26,7 @@ using namespace tensorflow;
 
 REGISTER_OP("BytesInUse")
     .Output("bytes_in_use: int64")
+    .SetIsStateful()
     .Doc(R"doc(Returns bytes in use for the device the op is placed on
     )doc");
 
@@ -42,7 +43,11 @@ class BytesInUseOp : public OpKernel {
     AllocatorAttributes alloc_attrs;
     auto device = static_cast<tensorflow::Device*>(ctx->device());
     Allocator* allocator = device->GetAllocator(alloc_attrs);
+    // this doesn't do anything until cpu_allocator_collect_full_stats
+    // is marked as extern
+    EnableCPUAllocatorStats(true);
     AllocatorStats stats;
+    printf("Computing allocator %s", allocator->Name().c_str());
     allocator->GetStats(&stats);
     output(0) = stats.bytes_in_use;
   }
@@ -53,6 +58,7 @@ REGISTER_KERNEL_BUILDER(Name("BytesInUse").Device(DEVICE_GPU).HostMemory("bytes_
 
 REGISTER_OP("BytesLimit")
     .Output("bytes_limit: int64")
+    .SetIsStateful()
     .Doc(R"doc(Returns bytes_limit for the device the op is placed on
     )doc");
 

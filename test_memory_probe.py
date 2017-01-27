@@ -7,7 +7,7 @@ import sys
 
 so_name = "memory_probe_ops.so"
 
-paths_to_search = os.environ['PATH'].split(':')
+paths_to_search = []
 paths_to_search.append('.')
 for path in paths_to_search:
     full_so_name = os.path.join(path, so_name)
@@ -16,16 +16,17 @@ for path in paths_to_search:
         memory_probe_ops = tf.load_op_library(full_so_name)
         break
 else:
-    print("Unable to find %s in . or $PATH, quitting"%(so_name))
+    print("Unable to find %s in %s, quitting"%(so_name, paths_to_search,))
     sys.exit()
     
 run_with_tracing = False
-config = tf.ConfigProto(graph_options=tf.GraphOptions(optimizer_options=tf.OptimizerOptions(opt_level=tf.OptimizerOptions.L0)))
+config = tf.ConfigProto()
+#config = tf.ConfigProto(graph_options=tf.GraphOptions(optimizer_options=tf.OptimizerOptions(opt_level=tf.OptimizerOptions.L0)))
 
 for d in ["/cpu:0", "/gpu:0"]:
     with tf.device(d):
         sess = tf.InteractiveSession(config=config)
-        mbs = 42
+        mbs = 12
         n = mbs*250000
         inputs = tf.random_uniform((n,))
         print("Allocating %d MB variable on %s"%(mbs, d,))
