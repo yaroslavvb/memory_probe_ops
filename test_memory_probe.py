@@ -33,10 +33,11 @@ for d in ["/cpu:0", "/gpu:0"]:
         var = tf.Variable(inputs)
         probe_op = memory_probe_ops.bytes_in_use()
         max_op = memory_probe_ops.bytes_limit()
+        name_op = memory_probe_ops.allocator_name()
         run_metadata = tf.RunMetadata()
         run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
-        print("Before init %10d out of %10d bytes" % tuple(sess.run([probe_op, max_op])))
+        print("Before init %10d out of %10d bytes with allocator %s" % tuple(sess.run([probe_op, max_op, name_op])))
         sess.run(var.initializer)
-        print("After  init %10d out of %10d bytes" % tuple(sess.run([probe_op, max_op])))
+        print("After  init %10d out of %10d bytes with allocator %s" % tuple(sess.run([probe_op, max_op, name_op])))
         if run_with_tracing:
             print(run_metadata)

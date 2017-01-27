@@ -25,7 +25,7 @@
 using namespace tensorflow;
 
 REGISTER_OP("BytesInUse")
-    .Output("bytes_in_use: int64")
+    .Output("output: int64")
     .SetIsStateful()
     .Doc(R"doc(Returns bytes in use for the device the op is placed on
     )doc");
@@ -47,17 +47,41 @@ class BytesInUseOp : public OpKernel {
     // is marked as extern
     EnableCPUAllocatorStats(true);
     AllocatorStats stats;
-    printf("Computing allocator %s", allocator->Name().c_str());
     allocator->GetStats(&stats);
     output(0) = stats.bytes_in_use;
   }
 };
 
 REGISTER_KERNEL_BUILDER(Name("BytesInUse").Device(DEVICE_CPU), BytesInUseOp);
-REGISTER_KERNEL_BUILDER(Name("BytesInUse").Device(DEVICE_GPU).HostMemory("bytes_in_use"), BytesInUseOp);
+REGISTER_KERNEL_BUILDER(Name("BytesInUse").Device(DEVICE_GPU).HostMemory("output"), BytesInUseOp);
+
+REGISTER_OP("AllocatorName")
+    .Output("output: string")
+    .SetIsStateful()
+    .Doc(R"doc(Returns name of current allocator
+    )doc");
+
+class AllocatorNameOp : public OpKernel {
+ public:
+  explicit AllocatorNameOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
+
+  void Compute(OpKernelContext* ctx) override {
+    Tensor* output_tensor = NULL;
+    OP_REQUIRES_OK(ctx, ctx->allocate_output(0, TensorShape({}),
+                                             &output_tensor));
+    auto output = output_tensor->flat<string>();
+    AllocatorAttributes alloc_attrs;
+    auto device = static_cast<tensorflow::Device*>(ctx->device());
+    Allocator* allocator = device->GetAllocator(alloc_attrs);
+    output(0) = allocator->Name();
+  }
+};
+
+REGISTER_KERNEL_BUILDER(Name("AllocatorName").Device(DEVICE_CPU), AllocatorNameOp);
+REGISTER_KERNEL_BUILDER(Name("AllocatorName").Device(DEVICE_GPU).HostMemory("output"), AllocatorNameOp);
 
 REGISTER_OP("BytesLimit")
-    .Output("bytes_limit: int64")
+    .Output("output: int64")
     .SetIsStateful()
     .Doc(R"doc(Returns bytes_limit for the device the op is placed on
     )doc");
@@ -82,4 +106,4 @@ class BytesLimitOp : public OpKernel {
 };
 
 REGISTER_KERNEL_BUILDER(Name("BytesLimit").Device(DEVICE_CPU), BytesLimitOp);
-REGISTER_KERNEL_BUILDER(Name("BytesLimit").Device(DEVICE_GPU).HostMemory("bytes_limit"), BytesLimitOp);
+REGISTER_KERNEL_BUILDER(Name("BytesLimit").Device(DEVICE_GPU).HostMemory("output"), BytesLimitOp);
