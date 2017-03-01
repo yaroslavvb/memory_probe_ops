@@ -8,11 +8,20 @@ Usage:
 3. Run `test_memory_probe.py`
 4. Check `memory-probe-examples.ipynb` for examples
 
-If you put `.so` file in current directory, you can use it from script as follows
+On Linux you can test memory probe ops as follows:
 
 ```
+# install memory_probe_ops
+
+import urllib.request
+response = urllib.request.urlopen("https://github.com/yaroslavvb/memory_probe_ops/raw/master/linux.memory_probe_ops.so")
+open("memory_probe_ops.so", "wb").write(response.read())
+
+import tensorflow as tf
+
 memory_probe_ops = tf.load_op_library("./memory_prob_ops.so")
 print("Memory usage: ")
+sess = tf.Session()
 print(sess.run(memory_probe_ops.bytes_in_use()))
 ```
 
