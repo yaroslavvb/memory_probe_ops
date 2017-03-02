@@ -1,7 +1,3 @@
-# Update Mar 2
-A similar op for `max_bytes_in_use` has been integrated into TensorFlow github.com/tensorflow/tensorflow/commit/ccf9a752
-ops below provide `bytes_in_use` and `bytes_limit` which are not yet integrated.
-
 # memory_probe_ops
 TensorFlow kernels for probing memory.
 
@@ -67,3 +63,7 @@ Now run
 `
 
 The `.so` file is dropped under `bazel-bin/tensorflow/core/user_ops/memory_probe_ops.so`
+
+## Note
+
+A similar op for `max_bytes_in_use` has been integrated into TensorFlow in [ccf9a752](github.com/tensorflow/tensorflow/commit/ccf9a752)
