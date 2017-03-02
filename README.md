@@ -1,3 +1,7 @@
+# Update Mar 2
+A similar op for `max_bytes_in_use` has been integrated into TensorFlow github.com/tensorflow/tensorflow/commit/ccf9a752
+ops below provide `bytes_in_use` and `bytes_limit` which are not yet integrated.
+
 # memory_probe_ops
 TensorFlow kernels for probing memory.
 
@@ -19,7 +23,7 @@ open("memory_probe_ops.so", "wb").write(response.read())
 
 import tensorflow as tf
 
-memory_probe_ops = tf.load_op_library("./memory_prob_ops.so")
+memory_probe_ops = tf.load_op_library("./memory_probe_ops.so")
 print("Memory usage: ")
 sess = tf.Session()
 print(sess.run(memory_probe_ops.bytes_in_use()))
