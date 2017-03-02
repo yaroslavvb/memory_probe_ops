@@ -66,4 +66,4 @@ The `.so` file is dropped under `bazel-bin/tensorflow/core/user_ops/memory_probe
 
 ## Note
 
-A similar op for `max_bytes_in_use` has been integrated into TensorFlow in [ccf9a752](github.com/tensorflow/tensorflow/commit/ccf9a752)
+A similar op for `max_bytes_in_use` has been integrated into TensorFlow in [ccf9a752](https://github.com/tensorflow/tensorflow/commit/ccf9a752)
